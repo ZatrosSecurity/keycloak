@@ -1,7 +1,17 @@
+# Create a dedicated namespace for Keycloak
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak-system
+  labels:
+    name: keycloak-system
+---
+# Updated Role with explicit namespace
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: keycloak-operator-role
+  namespace: keycloak-system  # Explicitly specify the namespace
 rules:
   - apiGroups:
       - apps
@@ -62,6 +72,7 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
   name: keycloak-operator-role-binding
+  namespace: keycloak-system  # Explicitly specify the namespace
 roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io
@@ -69,3 +80,11 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: keycloak-operator
+    namespace: keycloak-system  # Explicitly specify the namespace
+---
+# Service Account for the Keycloak operator
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: keycloak-operator
+  namespace: keycloak-system
